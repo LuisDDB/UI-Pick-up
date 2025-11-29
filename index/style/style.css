@@ -1,0 +1,129 @@
+:root {
+    --primary-color: #1E3A8A;
+    --secondly-color: #3B82F6;
+    --btn-seleted: #0946a8;
+
+    --white: #FFFFFF;
+    --black: #000000;
+    --gray: #F3F4F6;
+
+    --transition: 0.3s ease;
+    --border-radius: 0.75rem;
+}
+
+img {
+    max-width: 100%;
+
+}
+
+a {
+    color: var(--white);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logo {
+    max-height: 6rem;
+    width: auto;
+    object-fit: contain;
+    overflow: hidden;
+    margin: .5rem;
+}
+
+.header {
+    color: var(--white);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--primary-color);
+    
+
+}
+
+.link-btn {
+    background-color: transparent;
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+    transition: transform .5s ease-in;
+}
+
+.link-btn:hover {
+    transform: scale(1.1);
+}
+
+
+.nav {
+    ul {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 2.2rem;
+    }
+
+    li {
+        color: var(--white);
+        transition: transform var(--transition);
+    }
+
+    li:hover {
+        transform: scale(1.1);
+    }
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    width: 26rem;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 2px solid var(--white);
+    transition: border var(--transition);
+}
+
+.search:hover {
+    border: 2px solid var(--secondly-color);
+}
+
+.search-bar {
+    flex: 1; 
+    padding: 0.75rem 1rem;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+}
+
+.search-bar:focus {
+    outline: none;
+}
+
+.search-btn-bg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1rem;
+    background-color: var(--gray);
+    border-left: 1px solid var(--black);
+}
+
+.search-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: transform var(--transition);
+}
+
+.search-btn:hover {
+    transform: scale(1.1);
+}
+
+
+.app {
+    margin: 0 auto;
+    width: 80%;
+}
