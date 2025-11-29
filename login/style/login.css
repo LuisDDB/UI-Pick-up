@@ -1,0 +1,103 @@
+:root {
+    --primary-color: #1E3A8A;
+    --btn-color: #3B82F6;
+    --btn-selected: #0946a8;
+
+    --white: #FFFFFF;
+    --black: #000000;
+    --gray: #F3F4F6;
+    --red: #f32b2b;
+
+    --bg-transparent: rgba(0, 0, 0, 0.897);
+
+    --transition: 0.3s ease;
+    --border-radius: 0.75rem;
+    
+}
+
+.form-login {
+    margin: 3rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+
+    width: 100%;
+    max-width: 420px;
+
+    background-color: var(--gray);
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 4px 12px var(--black);
+}
+
+.label {
+    margin-bottom: 0.2rem;
+    color: var(--primary-color);
+}
+
+.input {
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--white);
+    outline: none;
+    font-size: 1rem;
+    transition: border var(--transition), box-shadow var(--transition);
+}
+
+.input:focus {
+    border-color: var(--btn-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.btn {
+    margin: 1rem auto 0;
+    padding: 0.7rem 2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--btn-color);
+    color: var(--white);
+    cursor: pointer;
+
+    font-weight: 600;
+    font-size: 1rem;
+
+    transition: background-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.btn:hover {
+    background-color: var(--btn-selected);
+    transform: translateY(-2px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 255, 0.2);
+}
+
+.center {
+    margin: auto;
+}
+
+
+.modal{
+  position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-transparent);
+}
+
+.form-header {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.close-btn{
+    background-color: transparent;
+    margin: 0;
+    color: var(--black);
+}
+
+.close-btn:hover{
+    background-color: transparent;
+    box-shadow: none;
+}
