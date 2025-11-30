@@ -12,6 +12,7 @@ class Login extends HTMLElement {
         <div id="modal" class="modal">
             <form id="loginForm" class="form-login">
                 <div class="form-header">
+                    <h2>Iniciar sesión</h2>
                     <button type="button" class="btn close-btn">X</button>
                 </div>
 

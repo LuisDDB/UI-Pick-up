@@ -8,6 +8,11 @@ class Register extends HTMLElement{
             </style>
             <div class="modal">
                 <form id="form-register" class="form-register">
+                    <div class="form-header">
+                        <h2>Registrarse</h2>
+                        <button type="button" class="btn close-btn">X</button>
+                    </div>
+
                     <label class="label" for="name">Nombre completo</label>
                     <input class="input" name="name" type="text" placeholder="Luis Domínguez" tabindex="1" required />
                     <label class="label" for="email"> Email </label> 
@@ -60,6 +65,11 @@ class Register extends HTMLElement{
             if(e.target==modal){
                 closeModal();
             }
+        })
+
+        const btnCloseModal =this.querySelector(".close-btn")
+        btnCloseModal.addEventListener("click",()=>{
+            closeModal();
         })
         
 
