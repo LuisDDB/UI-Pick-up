@@ -8,7 +8,12 @@ const btnLogin = document.getElementById("login-btn");
 btnLogin.addEventListener("click", ()=>{
     const modal = document.createElement("mfe-login");
     document.body.appendChild(modal);
-    console.log("hola")
+});
+
+const btnRegister = document.getElementById("register-btn");
+btnRegister.addEventListener("click", ()=>{
+    const modal = document.createElement("mfe-register");
+    document.body.appendChild(modal);
 });
 
 
