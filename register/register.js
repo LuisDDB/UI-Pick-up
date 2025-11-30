@@ -42,6 +42,7 @@ class Register extends HTMLElement{
             try{
                 const res = await fetch(`${environment.URL_API}/register`, {
                     method: "POST",
+                    credentials: "include",
                     headers: {"Content-type": "application/json"},
                     body: JSON.stringify({name, email, password})
                 });
@@ -53,6 +54,7 @@ class Register extends HTMLElement{
                     return;
                 }
                 console.log(data);
+                openLoginModal();
 
             }catch(error){
                 alert("Error al conectar el servidor");
@@ -75,19 +77,21 @@ class Register extends HTMLElement{
 
         const btnToLogin = this.querySelector("#toLogin");
         
-        btnToLogin.addEventListener("click",()=>{
+        btnToLogin.addEventListener("click", openLoginModal)
+
+       
+        function openLoginModal(){
             componentInstance.dispatchEvent(new CustomEvent("open-login",{
                 bubbles: true,
                 composed:true
             }))
             closeModal();
-        })
+        }
 
-        function closeModal(){
+         function closeModal(){
             componentInstance.remove();
         }
         
-
 
     }
 

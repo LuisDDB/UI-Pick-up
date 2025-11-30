@@ -41,6 +41,7 @@ class Login extends HTMLElement {
             try {
                 const res = await fetch(`${environment.URL_API}/login`, {
                     method: "POST",
+                    credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
