@@ -6,14 +6,24 @@ window.addEventListener("load", router);
 
 const btnLogin = document.getElementById("login-btn");
 btnLogin.addEventListener("click", ()=>{
-    const modal = document.createElement("mfe-login");
-    document.body.appendChild(modal);
+    openModal("mfe-login");
 });
 
 const btnRegister = document.getElementById("register-btn");
 btnRegister.addEventListener("click", ()=>{
-    const modal = document.createElement("mfe-register");
-    document.body.appendChild(modal);
+    openModal("mfe-register");
 });
+
+document.addEventListener("open-login",()=>{
+    openModal("mfe-login")
+})
+
+function openModal(etiquta){
+    const modal = document.createElement(etiquta);
+    document.body.appendChild(modal);
+}
+
+
+
 
 

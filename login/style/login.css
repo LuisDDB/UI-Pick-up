@@ -71,11 +71,6 @@
     box-shadow: 0px 6px 12px rgba(0, 0, 255, 0.2);
 }
 
-.center {
-    margin: auto;
-}
-
-
 .modal{
   position: fixed;
     top: 0;
@@ -100,4 +95,18 @@
 .close-btn:hover{
     background-color: transparent;
     box-shadow: none;
+}
+
+.btn-enlace {
+    margin-top: 1rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+
+    span{
+        color: var(--btn-selected);
+    }
+    span:hover{
+        text-decoration: underline;
+    }
 }

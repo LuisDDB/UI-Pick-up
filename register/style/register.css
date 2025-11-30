@@ -101,4 +101,11 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
+
+    span{
+        color: var(--btn-selected);
+    }
+    span:hover{
+        text-decoration: underline;
+    }
 }

@@ -17,9 +17,9 @@ class Register extends HTMLElement{
 
                     <button class="btn" type="submit"> Registrarse </button>
 
-                        <button class="btn-enlace">
+                    <button type="button" id="toLogin" class="btn-enlace">
                          ¿Ya tienes una cuenta? <span>Inicia sesión aquí</span>
-                        </button>
+                    </button>
                 </form>
             </div>
         `;
@@ -55,15 +55,23 @@ class Register extends HTMLElement{
             }
 
         })
-
-
         const modal= this.querySelector(".modal");
         modal.addEventListener("click", (e)=>{
             if(e.target==modal){
                 closeModal();
             }
         })
+        
 
+        const btnToLogin = this.querySelector("#toLogin");
+        
+        btnToLogin.addEventListener("click",()=>{
+            componentInstance.dispatchEvent(new CustomEvent("open-login",{
+                bubbles: true,
+                composed:true
+            }))
+            closeModal();
+        })
 
         function closeModal(){
             componentInstance.remove();
