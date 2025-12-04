@@ -1,7 +1,17 @@
 import { router } from "./router.js";
 
-window.addEventListener("hashchange", router);
-window.addEventListener("load", router);
+document.addEventListener("click", (e) => {
+    if (e.target.matches("[data-route]")) {
+        e.preventDefault();
+        const url = e.target.getAttribute("href");
+
+        window.history.pushState({}, "", url);
+
+        router();
+    }
+});
+
+window.addEventListener("popstate", router);
 
 
 const btnLogin = document.getElementById("login-btn");
@@ -15,8 +25,12 @@ btnRegister.addEventListener("click", ()=>{
 });
 
 document.addEventListener("open-login",()=>{
-    openModal("mfe-login")
+    openModal("mfe-login");
 })
+
+document.addEventListener("open-register", ()=>{
+    openModal("mfe-register");
+});
 
 function openModal(etiquta){
     const modal = document.createElement(etiquta);
