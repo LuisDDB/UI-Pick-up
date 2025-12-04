@@ -48,14 +48,14 @@ class Login extends HTMLElement {
 
                 const data = await res.json();
 
+                console.log(data);
+
                 if (!res.ok) {
                     alert(data.error || "Credenciales incorrectas");
                     return;
                 }
 
-                localStorage.setItem("token", data.token);
 
-                location.hash = "#/home";
                 closeModal();
             } catch (error) {
                 console.error(error);
@@ -75,6 +75,17 @@ class Login extends HTMLElement {
                 closeModal();
             }
         });
+
+        const btnToRegister = this.querySelector("#toRegister");
+        btnToRegister.addEventListener("click",openRegisterLogin);
+
+        function openRegisterLogin(){
+            componentInstance.dispatchEvent(new CustomEvent("open-register",{
+                bubbles: true,
+                composed: true
+            }))
+            closeModal();
+        }
 
         function closeModal() {
             componentInstance.remove()
