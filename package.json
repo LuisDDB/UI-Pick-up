@@ -1,0 +1,24 @@
+{
+  "name": "easypickup",
+  "version": "1.0.0",
+  "main": "index.js",
+"scripts": {
+    "start": "live-server --port=8080 --entry-file=index.html",
+    "login": "live-server login --port=4001 --cors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuisDDB/UI-Pick-up.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuisDDB/UI-Pick-up/issues"
+  },
+  "homepage": "https://github.com/LuisDDB/UI-Pick-up#readme",
+  "description": "",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
