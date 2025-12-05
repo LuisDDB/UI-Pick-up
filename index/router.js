@@ -8,18 +8,26 @@ export async function router() {
     console.log("Ruta actual:", path);
 
     app.innerHTML = "";
+    
+    let componentTag = ""; 
+    let componentUrl = "";
+
 
     switch (path) {
         case "/":
-            app.innerHTML = "<h1>Home</h1>";
+            componentUrl = `${environment.URL_Home}/home.js`;
+            componentTag = "mfe-home";
             break;
 
         case "/pedidos":
-            app.innerHTML = "<h1>Pedidos</h1>";
+            
             break;
 
         default:
             app.innerHTML = "<h1>404 - No encontrado</h1>";
             break;
     }
+    await import(componentUrl);
+    app.innerHTML = `<${componentTag}></${componentTag}>`;
+
 }
