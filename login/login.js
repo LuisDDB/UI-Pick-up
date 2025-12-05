@@ -32,6 +32,9 @@ class Login extends HTMLElement {
         `;
 
         const componentInstance = this;
+
+
+        //Manejo del login
         const formLogin = document.getElementById("loginForm");
         formLogin.addEventListener("submit", async e => {
             e.preventDefault();
@@ -55,6 +58,15 @@ class Login extends HTMLElement {
                     return;
                 }
 
+                localStorage.setItem("user", JSON.stringify({
+                    "id":data.client.id,
+                    "name": data.client.name
+                }))
+
+                window.dispatchEvent(new CustomEvent("logged-in",{
+                    detail: {user: data}
+                }));
+
 
                 closeModal();
             } catch (error) {
@@ -63,22 +75,21 @@ class Login extends HTMLElement {
             }
         })
 
+        //Cerrar el modal
         const modal = this.querySelector("#modal");
         const btnClose = this.querySelector(".close-btn");
-
         btnClose.addEventListener("click" ,() =>{
             closeModal();
         })
-
         modal.addEventListener("click", e => {
             if(e.target === modal){
                 closeModal();
             }
         });
-
+        
+        //Mandar al registro
         const btnToRegister = this.querySelector("#toRegister");
         btnToRegister.addEventListener("click",openRegisterLogin);
-
         function openRegisterLogin(){
             componentInstance.dispatchEvent(new CustomEvent("open-register",{
                 bubbles: true,
@@ -87,6 +98,9 @@ class Login extends HTMLElement {
             closeModal();
         }
 
+        /**
+         * Elimina el elemento modal
+         */
         function closeModal() {
             componentInstance.remove()
         }
