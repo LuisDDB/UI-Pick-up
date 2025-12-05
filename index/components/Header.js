@@ -1,4 +1,3 @@
-import { environment } from "../config/environment.js";
 import { router } from "../router.js";
 
 class Header extends HTMLElement {
@@ -6,9 +5,6 @@ class Header extends HTMLElement {
 
         this.innerHTML =
             `
-        <style>
-                @import url(${environment.URL_Index}/style/login.css);
-                </style>
         <header class="header">
             <picture> <!--Logo-->
                 <a href="/" data-route>
