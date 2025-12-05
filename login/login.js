@@ -12,10 +12,8 @@ class Login extends HTMLElement {
         <div id="modal" class="modal">
             <form id="loginForm" class="form-login">
                 <div class="form-header">
-                    <button class="btn close-btn">X</button>
-                </div>
-                <div class="center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /></svg>
+                    <h2>Iniciar sesión</h2>
+                    <button type="button" class="btn close-btn">X</button>
                 </div>
 
                 <label class="label" for="email">Ingrese su email</label>
@@ -25,12 +23,18 @@ class Login extends HTMLElement {
 
                 <button class="btn" type="submit">Login</button>
 
-                
+                <button type="button" id="toRegister" class="btn-enlace">
+                    ¿No tienes una cuenta? <span>Crea una cuenta</span>
+                </button>
 
             </form>
         </div>
         `;
 
+        const componentInstance = this;
+
+
+        //Manejo del login
         const formLogin = document.getElementById("loginForm");
         formLogin.addEventListener("submit", async e => {
             e.preventDefault();
@@ -40,41 +44,65 @@ class Login extends HTMLElement {
             try {
                 const res = await fetch(`${environment.URL_API}/login`, {
                     method: "POST",
+                    credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
 
                 const data = await res.json();
 
+                console.log(data);
+
                 if (!res.ok) {
                     alert(data.error || "Credenciales incorrectas");
                     return;
                 }
 
-                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify({
+                    "id":data.client.id,
+                    "name": data.client.name
+                }))
 
-                location.hash = "#/home";
+                window.dispatchEvent(new CustomEvent("logged-in",{
+                    detail: {user: data}
+                }));
+
+
+                closeModal();
             } catch (error) {
                 console.error(error);
                 alert("Error al conectar con el servidor");
             }
         })
 
+        //Cerrar el modal
         const modal = this.querySelector("#modal");
         const btnClose = this.querySelector(".close-btn");
-
         btnClose.addEventListener("click" ,() =>{
             closeModal();
         })
-
         modal.addEventListener("click", e => {
             if(e.target === modal){
                 closeModal();
             }
         });
+        
+        //Mandar al registro
+        const btnToRegister = this.querySelector("#toRegister");
+        btnToRegister.addEventListener("click",openRegisterLogin);
+        function openRegisterLogin(){
+            componentInstance.dispatchEvent(new CustomEvent("open-register",{
+                bubbles: true,
+                composed: true
+            }))
+            closeModal();
+        }
 
+        /**
+         * Elimina el elemento modal
+         */
         function closeModal() {
-            modal.remove()
+            componentInstance.remove()
         }
 
         
