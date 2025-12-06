@@ -7,17 +7,15 @@ class Header extends HTMLElement {
         this.innerHTML =
             `
         <style>
-                @import url(${environment.URL_Index}/style/login.css);
-                </style>
+            @import url(${environment.URL_Index}/style/login.css);
+            </style>
         <header class="header">
-            <picture> <!--Logo-->
-                <a href="/" data-route>
+            <picture> <a href="/" data-route>
                     <img src="./assets/images/logo.png" alt="Logo" class="logo">
                 </a>
             </picture>
 
-            <div class="search"><!--Busqueda de tienda-->
-                <label for="search-store" style="display: none;"> Busca tiendas</label>
+            <div class="search"><label for="search-store" style="display: none;"> Busca tiendas</label>
                 <input type="text" id="search-store" name="search-store" class="search-bar"
                     placeholder="Encuentra tu tienda preferida">
                 <div class="search-btn-bg">
@@ -33,6 +31,15 @@ class Header extends HTMLElement {
             </div>
             <nav class="nav"> 
                 <ul>
+                    
+                    <li>
+                        <button id="add-product-btn" class="link-btn" style="display: none;">Agregar Producto</button>
+                    </li>
+                    
+                    <li>
+                        <a href="/mi-tienda" data-route id="my-store-btn" class="link-btn" style="display: none;">Mi Tienda</a>
+                    </li>
+                    
                     <li>
                         <button id="register-btn" class="link-btn">Registrarse</button>
                     </li>
@@ -58,7 +65,7 @@ class Header extends HTMLElement {
         </header>
             `
 
-
+        // Manejador de enrutamiento (Routing)
         document.addEventListener("click", (e) => {
             if (e.target.matches("[data-route]")) {
                 e.preventDefault();
@@ -71,8 +78,12 @@ class Header extends HTMLElement {
         });
         window.addEventListener("popstate", router);
 
+        // --- Manejadores de Modales ---
         
-
+        const btnAddProduct = document.getElementById("add-product-btn");
+        btnAddProduct.addEventListener("click", () => {
+            openModal("mfe-add-product");
+        });
 
         const btnLogin = document.getElementById("login-btn");
         btnLogin.addEventListener("click", () => {
@@ -83,7 +94,11 @@ class Header extends HTMLElement {
         btnRegister.addEventListener("click", () => {
             openModal("mfe-register");
         });
-
+        
+        // --- Nuevo Botón de Mi Tienda ---
+        const btnMyStore = document.getElementById("my-store-btn");
+        
+        // --- Eventos de Apertura de Modales ---
         document.addEventListener("open-login", () => {
             openModal("mfe-login");
         })
@@ -97,29 +112,42 @@ class Header extends HTMLElement {
             document.body.appendChild(modal);
         }
 
-         window.addEventListener("logged-in", () => {
-            this.updateAuthState(btnLogin, btnRegister);
+        // --- Lógica de Estado de Autenticación ---
+
+        // Actualiza la llamada incluyendo el nuevo botón de Mi Tienda
+        window.addEventListener("logged-in", () => {
+            this.updateAuthState(btnLogin, btnRegister, btnAddProduct, btnMyStore); 
         });
 
-        this.updateAuthState(btnLogin, btnRegister);
-        
-
-
-
+        // Llamada inicial para establecer el estado
+        this.updateAuthState(btnLogin, btnRegister, btnAddProduct, btnMyStore);
     }
-    updateAuthState(btnLogin, btnRegister ) {
+    
+    // Función para actualizar el estado, ahora recibe el botón de Mi Tienda
+    updateAuthState(btnLogin, btnRegister, btnAddProduct, btnMyStore) { 
         const user = JSON.parse(localStorage.getItem("user"));
         console.log("header " +user);
-      
+    
 
-        if (!btnLogin || !btnRegister) return;
+        if (!btnLogin || !btnRegister || !btnAddProduct || !btnMyStore) return; // Incluye el nuevo botón en la verificación
 
-        if (user.id) {
+        if (user && user.id) { 
+            // Usuario Logueado
             btnLogin.style.display = "none";
             btnRegister.style.display = "none";
+            
+            // Mostrar botones para usuarios logueados
+            btnAddProduct.style.display = "block";
+            btnMyStore.style.display = "block"; 
+            
         } else {
+            // Usuario Deslogueado
             btnLogin.style.display = "block";
             btnRegister.style.display = "block";
+            
+            // Ocultar botones si no está logueado
+            btnAddProduct.style.display = "none";
+            btnMyStore.style.display = "none"; 
         }
     }
 

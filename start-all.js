@@ -9,3 +9,5 @@ function run(name, path, port) {
 run("index", "index", 4000);
 run("Login MFE", "login", 4001);
 run("Register MFE", "register", 4002);
+run("AddProduc MFE", "addProduct", 4003);
+run("Store MFE", "store", 4004);

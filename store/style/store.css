@@ -1,0 +1,95 @@
+/*
+* store-page.css
+* * Este archivo asume que las variables como --primary-color, --gray, --btn-selected, 
+* y --border-radius están definidas en tu archivo CSS principal (donde tienes :root).
+*/
+
+/* --- Contenedor Principal de la Tienda --- */
+.store-container {
+    /* Centrar la tarjeta de la tienda en el contenido principal */
+    padding: 2.5rem;
+    max-width: 900px;
+    margin: 3rem auto; 
+    
+    /* Estilos basados en tu paleta de colores */
+    background-color: var(--white); /* Usamos blanco para resaltar */
+    border: 1px solid var(--gray);
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transition: box-shadow var(--transition, 0.3s ease);
+}
+
+.store-container:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Título y Encabezados --- */
+
+.store-container h1 {
+    color: var(--primary-color, #1E3A8A);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    border-bottom: 3px solid var(--btn-color, #3B82F6); /* Línea decorativa */
+    padding-bottom: 0.5rem;
+}
+
+.store-container h2 {
+    color: var(--primary-color, #1E3A8A);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* --- Detalles de la Tienda --- */
+
+.store-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding-top: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: baseline; /* Alinea etiquetas y valores */
+    font-size: 1.1rem;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--btn-selected, #0946a8);
+    min-width: 120px; /* Asegura que la etiqueta siempre tenga un ancho mínimo */
+    margin-right: 1rem;
+}
+
+.detail-value {
+    color: var(--black);
+    flex-grow: 1; /* Permite que el valor ocupe el espacio restante */
+}
+
+/* --- Estados de Carga y Error --- */
+
+.loading-state, .error-state {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.3rem;
+}
+
+.loading-state {
+    color: var(--primary-color, #1E3A8A);
+}
+
+.error-state {
+    color: var(--red, #f32b2b);
+    border: 1px solid currentColor;
+    border-radius: var(--border-radius);
+    background-color: rgba(243, 43, 43, 0.1); /* Fondo rojo claro */
+}
+
+.error-state p {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}

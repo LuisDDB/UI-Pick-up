@@ -17,6 +17,13 @@ export async function router() {
         case "/pedidos":
             app.innerHTML = "<h1>Pedidos</h1>";
             break;
+        case "/mi-tienda":
+            
+            const storePage = document.createElement('mfe-store-page');
+            
+            
+            app.appendChild(storePage);
+            break;
 
         default:
             app.innerHTML = "<h1>404 - No encontrado</h1>";
