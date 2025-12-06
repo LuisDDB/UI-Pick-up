@@ -1,16 +1,22 @@
+// FILE: employees/employees.js
 import { environment } from "./config/environment.js";
 
+/**
+ * Employee Dashboard Component.
+ * Features: Order management, Status Updates, Chat, and HISTORY.
+ */
 class EmployeeDashboard extends HTMLElement {
 
     constructor() {
         super();
-        this.currentTab = 'orders';
+        this.orders = []; 
+        this.currentChatOrderId = null;
     }
 
     connectedCallback() {
         this.render();
-        this.addEventListeners();
-        this.loadOrdersView(); 
+        this.bindEvents();
+        this.loadOrders(); 
     }
 
     render() {
@@ -21,139 +27,243 @@ class EmployeeDashboard extends HTMLElement {
 
         <div class="dashboard-container">
             <aside class="sidebar">
-                <h3>Pick Easy <br><small style="font-size:0.8rem; color:#64748b; font-weight:400;">Panel de Surtido</small></h3>
+                <h3>Pick Easy <br><small>Panel de Surtido</small></h3>
                 <button class="menu-btn active" id="btn-orders">Pedidos por Surtir</button>
                 <button class="menu-btn" id="btn-chat">Mensajes Clientes</button>
                 <button class="menu-btn" id="btn-history">Historial Entregas</button>
             </aside>
 
             <main class="main-content" id="content-area">
-                </main>
+                <div style="padding:2rem; text-align:center;"><h3>⌛ Cargando sistema...</h3></div>
+            </main>
         </div>
         `;
     }
 
-    // orders view
-    loadOrdersView() {
-        const content = this.querySelector("#content-area");
-        
-        // mock data
-        const mockOrders = [
-            { 
-                id: 2045, 
-                client: "Mariana Moreno", 
-                time: "Recoge: 4:30 PM",
-                items: "• 2L Leche Lala Entera<br>• 1kg Huevo San Juan<br>• 1kg Plátano Chiapas<br>• 1 Pan Bimbo Blanco", 
-                total: "$185.50", 
-                status: "Pendiente" 
-            },
-            { 
-                id: 2046, 
-                client: "Rafa Polinesio", 
-                time: "Recoge: 5:00 PM",
-                items: "• 1 Six Pack Cerveza Modelo<br>• 2 Bolsas Sabritas Sal<br>• 1 Salsa Valentina", 
-                total: "$240.00", 
-                status: "Pendiente" 
-            },
-            { 
-                id: 2042, 
-                client: "Ana Karen", 
-                time: "Listo para entrega",
-                items: "• Jabón Ariel 5kg<br>• Suavitel 3L<br>• Cloro Cloralex", 
-                total: "$310.00", 
-                status: "Listo" 
-            }
-        ];
-
-        content.innerHTML = `
-            <h2>Pedidos en Curso</h2>
-            <div class="orders-grid">
-                ${mockOrders.map(order => `
-                    <div class="order-card">
-                        <div class="order-header">
-                            <span class="order-id">#${order.id}</span>
-                            <span class="status-badge ${order.status === 'Listo' ? 'status-ready' : 'status-pending'}">
-                                ${order.status}
-                            </span>
-                        </div>
-                        
-                        <div class="client-info">
-                            <h3>${order.client}</h3>
-                            <small>${order.time}</small>
-                        </div>
-
-                        <div class="grocery-list">
-                            ${order.items}
-                        </div>
-
-                        <div class="order-footer">
-                            <span class="total">${order.total}</span>
-                            <button class="btn">
-                                ${order.status === 'Pendiente' ? 'Surtido Completo' : 'Entregar Pedido'}
-                            </button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+    // --- AYUDANTE: OBTENER DATOS ---
+    async fetchOrdersData() {
+        try {
+            const response = await fetch('http://localhost:3000/api/v1/orders');
+            const rawData = await response.json();
+            
+            // Guardamos los datos normalizados
+            this.orders = rawData.map(o => ({
+                id: o.id || o.order_id,
+                status: o.status || o.state || o.estado,
+                store: o.store || o.nombre_tienda,
+                date: o.date || o.fecha,
+                total: o.total,
+                pickupCode: o.pickup_code
+            }));
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 
-    // chat view
-    loadChatView() {
+    // --- 1. VISTA: PEDIDOS ACTIVOS ---
+    async loadOrders() {
+        const content = this.querySelector("#content-area");
+        content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3>⌛ Cargando pedidos...</h3></div>`;
+        
+        const success = await this.fetchOrdersData();
+        if (!success) {
+            content.innerHTML = `<div style="color:red; padding:2rem;">Error de conexión con API</div>`;
+            return;
+        }
+
+        // Filtramos solo los activos (Pendiente, Preparando, Listo)
+        const activeOrders = this.orders.filter(o => 
+            ['Pendiente', 'Preparando', 'Listo para Recoger'].includes(o.status)
+        );
+
+        if (activeOrders.length === 0) {
+            content.innerHTML = `<div style="padding:2rem; text-align:center;"><h2>✅ Todo al día</h2><p>No hay pedidos pendientes por surtir.</p></div>`;
+            return;
+        }
+
+        this.renderGrid(activeOrders, content, false);
+    }
+
+    // --- 2. VISTA: HISTORIAL (NUEVA) ---
+    async loadHistory() {
+        const content = this.querySelector("#content-area");
+        content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3>⌛ Cargando historial...</h3></div>`;
+
+        // Refrescamos datos por si hubo cambios recientes
+        await this.fetchOrdersData();
+
+        // Filtramos solo los TERMINADOS (Recogido, Cancelado)
+        const historyOrders = this.orders.filter(o => 
+            ['Recogido', 'Cancelado', 'Entregado'].includes(o.status)
+        );
+
+        if (historyOrders.length === 0) {
+            content.innerHTML = `<div style="padding:2rem; text-align:center;"><h2>📜 Historial vacío</h2><p>Aún no se han completado entregas.</p></div>`;
+            return;
+        }
+
+        // Usamos la misma función de renderizado pero con modo "historial"
+        this.renderGrid(historyOrders, content, true);
+    }
+
+    // Función reutilizable para pintar las tarjetas
+    renderGrid(list, container, isHistory) {
+        container.innerHTML = `
+            <h2>${isHistory ? 'Historial de Entregas' : 'Pedidos en Curso'} (${list.length})</h2>
+            <div class="orders-grid">
+                ${list.map(order => {
+                    // Lógica visual
+                    let statusClass = 'status-pending';
+                    let btnHtml = '';
+
+                    if (order.status === 'Listo para Recoger') statusClass = 'status-ready';
+                    if (order.status === 'Recogido') statusClass = 'status-ready'; // Usamos verde para finalizados también
+                    
+                    // Botones: Solo mostramos acciones si NO es historial
+                    if (!isHistory) {
+                        let nextStatus = '';
+                        let btnText = '';
+                        let btnClass = 'btn';
+
+                        if (order.status === 'Pendiente' || order.status === 'Preparando') {
+                            nextStatus = 'Listo para Recoger';
+                            btnText = '✅ Marcar Listo';
+                        } else if (order.status === 'Listo para Recoger') {
+                            nextStatus = 'Recogido';
+                            btnText = '📦 Entregar';
+                            btnClass = 'btn status-ready';
+                        }
+                        btnHtml = `<button class="${btnClass}" onclick="this.getRootNode().host.updateStatus(${order.id}, '${nextStatus}')">${btnText}</button>`;
+                    } else {
+                        // En historial solo mostramos fecha o un texto estático
+                        btnHtml = `<span style="color:#64748b; font-size:0.8rem;">Finalizado</span>`;
+                    }
+
+                    return `
+                    <div class="order-card" style="${isHistory ? 'opacity:0.8; background:#f8fafc;' : ''}">
+                        <div class="order-header">
+                            <span class="order-id">#${order.id}</span>
+                            <span class="status-badge ${statusClass}">${order.status}</span>
+                        </div>
+                        <div class="client-info"><h3>${order.store}</h3><small>${order.date}</small></div>
+                        <div class="grocery-list">
+                            ${order.pickupCode ? `<strong>Código: ${order.pickupCode}</strong>` : ''}
+                        </div>
+                        <div class="order-footer">
+                            <span class="total">$${order.total}</span>
+                            ${btnHtml}
+                        </div>
+                    </div>
+                `}).join('')}
+            </div>`;
+    }
+
+    // --- ACTUALIZAR ESTADO ---
+    async updateStatus(orderId, newStatus) {
+        if (!confirm(`¿Cambiar estado a "${newStatus}"?`)) return;
+        try {
+            const res = await fetch(`http://localhost:3000/api/v1/orders/${orderId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (res.ok) this.loadOrders(); // Recargar vista activa
+        } catch (err) { alert("Error de conexión"); }
+    }
+
+    // --- 3. VISTA: CHAT ---
+    async loadChatLayout() {
         const content = this.querySelector("#content-area");
         content.innerHTML = `
             <div class="chat-layout">
-                <div class="chat-list">
-                    <div class="chat-item" style="background:#f1f5f9; border-left: 4px solid var(--primary-color);">
-                        <strong>Martha Sánchez</strong><br>
-                        <small style="color:#64748b;">¿Puedo agregar algo más?</small>
-                    </div>
-                    <div class="chat-item">
-                        <strong>Roberto Díaz</strong><br>
-                        <small style="color:#64748b;">Voy retrasado 10 min...</small>
-                    </div>
+                <div class="chat-list" id="chat-list-container"><div style="padding:1rem;">Cargando chats...</div></div>
+                <div class="chat-window" id="chat-window">
+                    <div style="padding:2rem; text-align:center; color:#64748b; margin-top: 5rem;"><h3>💬 Mensajes</h3><p>Selecciona un pedido.</p></div>
                 </div>
-
-                <div class="chat-window">
-                    <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; background: white;">
-                        <strong>Chat con: Martha Sánchez</strong>
-                        <div style="font-size:0.8rem; color:green;">● En línea</div>
-                    </div>
-                    
-                    <div class="messages-area">
-                        <div class="msg msg-client">Hola, ¿aún alcanzo a pedir unas galletas?</div>
-                        <div class="msg msg-emp">Hola Martha, claro. ¿Cuáles necesitas?</div>
-                        <div class="msg msg-client">Unas Chokis por favor.</div>
-                        <div class="msg msg-emp">¡Listo! Agregadas a tu cuenta.</div>
-                    </div>
-
-                    <form class="chat-input-area">
-                        <input type="text" class="input-chat" placeholder="Escribe un mensaje...">
-                        <button class="btn" style="margin:0; border-radius:2rem;">Enviar</button>
-                    </form>
-                </div>
-            </div>
-        `;
+            </div>`;
+        if (this.orders.length === 0) await this.fetchOrdersData();
+        this.renderChatList();
     }
 
-    addEventListeners() {
+    renderChatList() {
+        const list = this.querySelector("#chat-list-container");
+        // Mostramos todos los pedidos en el chat para poder consultar dudas de cualquiera
+        list.innerHTML = this.orders.map(o => `
+            <div class="chat-item" id="chat-item-${o.id}">
+                <strong>Pedido #${o.id}</strong><br><small>${o.store}</small>
+            </div>`).join('');
+        
+        this.orders.forEach(o => {
+            this.querySelector(`#chat-item-${o.id}`).addEventListener('click', () => this.openChat(o));
+        });
+    }
+
+    async openChat(order) {
+        this.currentChatOrderId = order.id;
+        const win = this.querySelector("#chat-window");
+        win.innerHTML = `
+            <div style="padding:1rem; border-bottom:1px solid #eee; background:white;"><strong>Chat Pedido #${order.id}</strong></div>
+            <div class="messages-area" id="chat-feed"><div style="padding:1rem; text-align:center;">Cargando...</div></div>
+            <form class="chat-input-area" id="chat-form">
+                <input type="text" class="input-chat" id="msg-input" placeholder="Escribe..." autocomplete="off">
+                <button class="btn" style="border-radius:2rem;">Enviar</button>
+            </form>`;
+        
+        try {
+            const res = await fetch(`http://localhost:3000/api/v1/orders/${order.id}/messages`);
+            const msgs = await res.json();
+            const feed = this.querySelector("#chat-feed");
+            feed.innerHTML = msgs.length ? '' : '<div style="padding:1rem; text-align:center; color:#ccc;">Sin mensajes.</div>';
+            msgs.forEach(m => this.appendMsg(m.content, m.sender === 'employee' ? 'me' : 'other'));
+            feed.scrollTop = feed.scrollHeight;
+            this.setupMsgForm();
+        } catch (e) { win.innerHTML = "Error cargando chat."; }
+    }
+
+    setupMsgForm() {
+        const form = this.querySelector("#chat-form");
+        const input = this.querySelector("#msg-input");
+        form.addEventListener("submit", async e => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if(!text) return;
+            this.appendMsg(text, 'me');
+            input.value = "";
+            await fetch('http://localhost:3000/api/v1/messages', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ orderId: this.currentChatOrderId, senderRole: 'employee', content: text })
+            });
+        });
+    }
+
+    appendMsg(text, type) {
+        const d = document.createElement("div");
+        d.className = `msg ${type === 'me' ? 'msg-emp' : 'msg-client'}`;
+        d.textContent = text;
+        this.querySelector("#chat-feed").appendChild(d);
+    }
+
+    // --- NAVEGACIÓN ---
+    bindEvents() {
         const btnOrders = this.querySelector("#btn-orders");
         const btnChat = this.querySelector("#btn-chat");
+        const btnHistory = this.querySelector("#btn-history");
 
-        btnOrders.addEventListener("click", () => {
-            this.updateActiveBtn(btnOrders);
-            this.loadOrdersView();
+        const setActive = (btn) => {
+            this.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        };
+
+        btnOrders.addEventListener("click", () => { this.loadOrders(); setActive(btnOrders); });
+        btnChat.addEventListener("click", () => { this.loadChatLayout(); setActive(btnChat); });
+        
+        // ✅ AHORA SÍ ESTÁ CONECTADO
+        btnHistory.addEventListener("click", () => { 
+            this.loadHistory(); 
+            setActive(btnHistory); 
         });
-
-        btnChat.addEventListener("click", () => {
-            this.updateActiveBtn(btnChat);
-            this.loadChatView();
-        });
-    }
-
-    updateActiveBtn(activeBtn) {
-        this.querySelectorAll(".menu-btn").forEach(btn => btn.classList.remove("active"));
-        activeBtn.classList.add("active");
     }
 }
 
