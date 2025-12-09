@@ -39,7 +39,7 @@ class Header extends HTMLElement {
                         <a href="/pedidos" data-route> Mis pedidos</a>
                     </li>
                     <li>
-                        <a href="">
+                        <button id="cart-btn" class="cart-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="#ffffff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
@@ -47,7 +47,7 @@ class Header extends HTMLElement {
                                 <path d="M17 17h-11v-14h-2" />
                                 <path d="M6 5l14 1l-1 7h-13" />
                             </svg>
-                        </a>
+                        </button>
                     </li>
                 </ul>
             </nav>
@@ -55,19 +55,16 @@ class Header extends HTMLElement {
             `
 
 
-        document.addEventListener("click", (e) => {
-            if (e.target.matches("[data-route]")) {
-                e.preventDefault();
-                const url = e.target.getAttribute("href");
 
-                window.history.pushState({}, "", url);
-
-                router();
-            }
-        });
         window.addEventListener("popstate", router);
 
-        
+        const btnCart = this.querySelector("#cart-btn");
+
+        btnCart.addEventListener("click", () => {
+            const cart = document.querySelector("#cartGlobal");
+            cart.open();
+        });
+
 
 
         const btnLogin = document.getElementById("login-btn");
@@ -93,20 +90,20 @@ class Header extends HTMLElement {
             document.body.appendChild(modal);
         }
 
-         window.addEventListener("logged-in", () => {
+        window.addEventListener("logged-in", () => {
             this.updateAuthState(btnLogin, btnRegister);
         });
 
         this.updateAuthState(btnLogin, btnRegister);
-        
+
 
 
 
     }
-    updateAuthState(btnLogin, btnRegister ) {
+    updateAuthState(btnLogin, btnRegister) {
         const user = JSON.parse(localStorage.getItem("user"));
-        console.log("header " +user);
-      
+        console.log("header " + user);
+
 
         if (!btnLogin || !btnRegister) return;
 
