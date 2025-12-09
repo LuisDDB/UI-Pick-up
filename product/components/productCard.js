@@ -3,11 +3,6 @@ import { environment } from "../config/environment.js";
 class ProductCard extends HTMLElement {
   set product(p) {
     this._product = p;
-    this.render();
-  }
-
-  render() {
-    const p = this._product;
     if (!p) return;
     this.innerHTML = `
       <style>
@@ -27,18 +22,19 @@ class ProductCard extends HTMLElement {
     `;
 
     this.querySelector('.btn-detail').addEventListener('click', () => {
-      // show detail component (modal)
-      const detail = document.createElement('mfe-product-detail');
-      detail.product = this._product;
-      document.body.appendChild(detail);
-      detail.show();
+      this.dispatchEvent(new CustomEvent("open-detail", {
+        bubbles: true,
+        composed: true,
+        detail: { product: this._product }
+      }));
+
     });
 
     this.querySelector('.btn-add').addEventListener('click', () => {
       addToCart(this._product, 1);
       window.dispatchEvent(new Event('cart-updated'));
       this.querySelector('.btn-add').textContent = 'Agregado ✓';
-      setTimeout(()=> this.querySelector('.btn-add').textContent = 'Agregar', 900);
+      setTimeout(() => this.querySelector('.btn-add').textContent = 'Agregar', 900);
     });
   }
 }
@@ -46,7 +42,7 @@ class ProductCard extends HTMLElement {
 customElements.define('mfe-product-card', ProductCard);
 
 function escapeHtml(s = '') {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // carrito: guardar por store_id
@@ -60,7 +56,7 @@ function saveCart(cart) {
   window.dispatchEvent(new Event('cart-updated'));
 }
 
-function addToCart(product, qty=1) {
+function addToCart(product, qty = 1) {
   const cart = getCart();
   const storeId = product.store_id || product.storeId || 'default';
   if (!cart[storeId]) cart[storeId] = {};
