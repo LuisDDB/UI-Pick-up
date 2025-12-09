@@ -1,0 +1,202 @@
+/* FILE: orders/style/orders.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:host {
+    display: block;
+}
+
+/* --- Main Layout Container --- */
+/* Forces full viewport width to override parent container constraints */
+.orders-view {
+    font-family: 'Poppins', sans-serif;
+    width: 100vw; 
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    
+    /* Calculate height based on estimated header size */
+    height: calc(100vh - 100px);
+    min-height: 500px;
+    
+    padding: 1.5rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    /* Background Gradient */
+    background: linear-gradient(180deg, #1E3A8A 0%, #2563EB 100%);
+    background-attachment: fixed;
+    color: white;
+}
+
+/* Section Header */
+h1 {
+    max-width: 800px;
+    margin: 0 auto 1.5rem auto;
+    width: 100%;
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* --- Filter Navigation Bar --- */
+.filter-bar {
+    max-width: 800px;
+    margin: 0 auto 2rem auto;
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    padding: 2px;
+    justify-content: center;
+}
+
+.filter-btn {
+    flex: 1;
+    max-width: 150px;
+    border: none;
+    padding: 12px;
+    font-size: 0.95rem;
+    border-radius: 50px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Glassmorphism Effect */
+    background: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+.filter-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Active Button State */
+.filter-btn.active {
+    background: #ffffff; 
+    color: #1E3A8A;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+/* --- Orders List Wrapper --- */
+.orders-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    padding-bottom: 4rem;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+    scrollbar-width: none;
+}
+
+.orders-list-container::-webkit-scrollbar { 
+    display: none; 
+}
+
+/* --- Card Component --- */
+.order-card {
+    margin-bottom: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease;
+
+    /* Card Glass Style */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.order-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Status Color Indicator */
+.order-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+}
+
+/* Dynamic State Colors */
+.order-card.completed::before { 
+    background: #4ade80; 
+    box-shadow: 0 0 10px #4ade80; 
+}
+
+.order-card.pending::before { 
+    background: #fbbf24; 
+    box-shadow: 0 0 10px #fbbf24; 
+}
+
+/* --- Content Typography --- */
+.order-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+    color: white;
+}
+
+.order-store {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.order-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 8px;
+    color: white;
+}
+
+/* --- Status Icon --- */
+.status-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.icon-box {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.2);
+    margin-bottom: 5px;
+}
+
+.icon-box svg { stroke: white; }
+
+.status-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.status-label.completed { color: #4ade80; }
+.status-label.pending { color: #fbbf24; }
+
+/* Loading Indicator */
+#loading {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.8);
+}
