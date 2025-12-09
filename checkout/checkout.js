@@ -30,6 +30,7 @@ class Checkout extends HTMLElement {
     renderSummary() {
         const cart = JSON.parse(localStorage.getItem('pickup_cart_v1') || '{}');
         const items = cart[this.storeId] ? Object.values(cart[this.storeId]) : [];
+        this.items = items; 
         this.total = items.reduce((s, i) => s + (i.qty * Number(i.price)), 0);
         const sumEl = this.querySelector('#summary');
         if (items.length === 0) {
@@ -83,22 +84,57 @@ class Checkout extends HTMLElement {
 
     async createOrder(payload) {
         try {
-            console.log("data client", this.clienData.token);
-
+            const token = this.clienData.token;
 
             const res = await fetch(`${environment.URL_API}/order/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    "Authorization": `Bearer ${this.clienData.token}`
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error(res || 'No se pudo crear el pedido');
-            const data = await res.json();
-            console.log("Respuesta del servidor order ", data);
 
-            this.showQR(data);
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`Fallo al crear la orden principal: ${errorText || res.statusText}`);
+            }
+
+            const orderData = await res.json();
+            const orderId = orderData.id || orderData.order_id;
+            
+
+            if (this.items && this.items.length > 0) {
+                
+                const detailPromises = this.items.map(async item => {
+                     const detailPayload =  {
+                        quantity: item.qty,
+                        sale_price: Number(item.price),
+                        product_id: item.product_id
+                    };
+                    console.log(detailPayload);
+
+                    const detailRes = await fetch(`${environment.URL_API}/detail/order/${orderId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify(detailPayload)
+                    });
+                    if (!detailRes.ok) {
+                        console.log(detailRes);
+                        console.error(`Fallo al crear el detalle para producto ${detailPayload}.`);
+                        return Promise.reject(new Error(`Fallo detalle para la orden`));
+                    }
+                    console.log(res);
+                    return await detailRes.json();
+                });
+
+                await Promise.allSettled(detailPromises);
+            }
+            
+            this.showQR(orderData);
             const cart = JSON.parse(localStorage.getItem('pickup_cart_v1') || '{}');
             delete cart[this.storeId];
             localStorage.setItem('pickup_cart_v1', JSON.stringify(cart));
@@ -110,7 +146,7 @@ class Checkout extends HTMLElement {
     }
 
     showQR(orderData) {
-        const orderId = orderData.order_id;
+        const orderId = orderData.order_id || orderData.id;
         const expiry = new Date();
         expiry.setDate(expiry.getDate() + 3);
         const qrPayload = JSON.stringify({ order_id: orderId, expires_at: expiry.toISOString() });
@@ -128,4 +164,3 @@ class Checkout extends HTMLElement {
 }
 
 customElements.define('mfe-checkout', Checkout);
-
