@@ -82,7 +82,6 @@
                     try {
                         const res = await fetch(`${environment.URL_API}/register`, {
                             method: "POST",
-                            credentials: "include",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ name, email, password })
                         });

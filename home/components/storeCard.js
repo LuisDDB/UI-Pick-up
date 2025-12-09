@@ -23,11 +23,9 @@ class StoreCard extends HTMLElement {
       </article>
     `;
 
-    this.querySelector('.open-store').addEventListener('click', () => {
-      window.dispatchEvent(new CustomEvent('navigate', { detail:{ url: `/store/${id}` } }));
-    });
-    this.querySelector('.store-card').addEventListener('keypress', e => {
-      if (e.key === 'Enter') this.querySelector('.open-store').click();
+    this.addEventListener('click', () => {
+      history.pushState({}, "", `/store/${id}`);
+      window.dispatchEvent(new Event('popstate'));
     });
   }
 }
@@ -35,5 +33,5 @@ class StoreCard extends HTMLElement {
 customElements.define('mfe-card', StoreCard);
 
 function escapeHtml(s) {
-  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }

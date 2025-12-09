@@ -100,6 +100,7 @@ class Header extends HTMLElement {
 
 
     }
+    
     updateAuthState(btnLogin, btnRegister) {
         const user = JSON.parse(localStorage.getItem("user"));
         console.log("header " + user);

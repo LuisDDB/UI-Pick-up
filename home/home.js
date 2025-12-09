@@ -24,7 +24,7 @@ class Home extends HTMLElement {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Error cargando tiendas');
-      return data; // asumo array
+      return data; 
     } catch(err) {
       console.error(err);
       return [];

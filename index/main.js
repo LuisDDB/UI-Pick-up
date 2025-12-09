@@ -17,6 +17,18 @@ document.addEventListener("click", (e) => {
     router();
 });
 
+window.addEventListener("navigate", (e) => {
+    const url = e.detail?.url;
+    if (!url) {
+        console.warn("Error en navigate:", e);
+        return;
+    }
+
+    history.pushState({}, "", url);
+    router();
+});
+
+
 document.addEventListener("close-model", (e) => {
     e.target.remove();
 });

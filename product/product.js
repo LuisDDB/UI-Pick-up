@@ -20,6 +20,7 @@ class product extends HTMLElement {
     const id = this._getStoreId();
     if (!id) return this.showError('ID de tienda inválido');
     this.storeId = id;
+    localStorage.setItem("idTienda", this.storeId);
     await this.loadStoreInfo();
     await this.loadProducts();
   }
@@ -31,7 +32,7 @@ class product extends HTMLElement {
 
   async loadStoreInfo() {
     try {
-      const res = await fetch(`${environment.URL_API}/product`);
+      const res = await fetch(`${environment.URL_API}/store/${this.storeId}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'No se pudo cargar tienda');
       this.querySelector('#storeName').textContent = data.name;
@@ -45,7 +46,7 @@ class product extends HTMLElement {
 
   async loadProducts() {
     try {
-      const res = await fetch(`${environment.URL_API}/product`,{
+      const res = await fetch(`${environment.URL_API}/product/store/${this.storeId}`,{
         method: "GET",
         credentials: "include",
         headers: { "Content-Type": "application/json" }

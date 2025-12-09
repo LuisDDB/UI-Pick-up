@@ -44,7 +44,6 @@ class Login extends HTMLElement {
             try {
                 const res = await fetch(`${environment.URL_API}/login`, {
                     method: "POST",
-                    credentials: "include",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
@@ -60,7 +59,8 @@ class Login extends HTMLElement {
 
                 localStorage.setItem("user", JSON.stringify({
                     "id":data.client.id,
-                    "name": data.client.name
+                    "name": data.client.name,
+                    "token": data.client.token
                 }))
 
                 window.dispatchEvent(new CustomEvent("logged-in",{
