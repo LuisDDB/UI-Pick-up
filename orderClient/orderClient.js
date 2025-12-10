@@ -45,9 +45,7 @@ class OrderClient extends HTMLElement {
 
     async fetchOrdersData() {
         const idClient = JSON.parse(localStorage.getItem("user")).id;
-        console.log("token: ",this.token);
         try {
-
             const response = await fetch(`${environment.URL_API}/order/client/${idClient}`, {
                 method: "GET",
                 headers: {
@@ -126,9 +124,14 @@ class OrderClient extends HTMLElement {
                             const next = 'Cancelado';
                             const text = 'Cancelar Pedido';
                             const cls = 'btn btn-cancel';
-                            btnHtml = `<button class="${cls}" onclick="this.getRootNode().host.updateStatus(${order.id}, '${next}')">${text}</button>`;
+                            btnHtml = `
+                            <button 
+                                class="${cls}" 
+                                data-action="update-status" 
+                                data-id="${order.id}" 
+                                data-newstatus="${next}"
+                            >${text}</button>`;
                         } else {
-                            // Para estados no cancelables (ej: Listo para Recoger)
                             btnHtml = `<span style="color:#64748b; font-size:.8rem;">En Proceso</span>`;
                         }
                     } else {
@@ -154,12 +157,15 @@ class OrderClient extends HTMLElement {
         `;
     }
 
-    async updateStatus(id, newStatus) {
+    async updateStatus(id, newState) {
         try {
-            const res = await fetch(`http://localhost:3000/api/v1/order/${id}/status`, {
+            const res = await fetch(`${environment.URL_API}/order/${id}/status`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${this.token}`
+                 },
+                body: JSON.stringify({ "newState": newState })
             });
             if (res.ok) this.updateView();
         } catch {}
@@ -184,6 +190,12 @@ class OrderClient extends HTMLElement {
             this.currentView = "history";
             setActive(btnHistory);
             this.updateView();
+        });
+
+        this.addEventListener("click", (e) => {
+            const btn = e.target.closest("[data-action='update-status']");
+            if (!btn) return;
+            this.updateStatus(btn.dataset.id, btn.dataset.newstatus);
         });
     }
 }
