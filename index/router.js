@@ -26,6 +26,14 @@ export async function router() {
             await import(`${environment.URL_Checkout}/checkout.js`);
             app.innerHTML = `<mfe-checkout></mfe-checkout>`;
         }
+        else if (path.startsWith("/empleado")) {
+            await import(`${environment.URL_Checkout}/checkout.js`);
+            app.innerHTML = `<mfe-checkout></mfe-checkout>`;
+        }
+        else if (path.startsWith("/pedidos")) {
+            await import(`${environment.URL_Employees}/employees.js`);
+            app.innerHTML = `<mfe-employees></mfe-employees>`;
+        }
 
         else {
             app.innerHTML = `<h1>No se encontró la pagina </h1>

@@ -39,6 +39,9 @@ class Header extends HTMLElement {
                         <a href="/pedidos" data-route> Mis pedidos</a>
                     </li>
                     <li>
+                        <a href="/empleados" data-route>Info Empleado</a>
+                    </li>
+                    <li>
                         <button id="cart-btn" class="cart-btn">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="#ffffff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
