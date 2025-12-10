@@ -60,6 +60,7 @@ class Login extends HTMLElement {
                 localStorage.setItem("user", JSON.stringify({
                     "id":data.client.id,
                     "name": data.client.name,
+                    "type": data.client.type,
                     "token": data.client.token
                 }))
 

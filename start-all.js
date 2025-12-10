@@ -15,6 +15,8 @@ run("Cart MFE", "cart", 4005);
 run("ProductDetail MFE", "product-detail", 4006);
 run("checkout MFE", "checkout", 4007);
 run("employes MFE", "employees", 4008);
+run("Order MFE", "orderClient", 4009);
+
 
 
 

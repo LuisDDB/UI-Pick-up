@@ -3,6 +3,8 @@ import { environment } from "./config/environment.js";
 export async function router() {
     const app = document.getElementById("app");
     const path = location.pathname;
+    const typeAccount = JSON.parse(localStorage.getItem("user")).type
+    console.log(typeAccount);
 
     app.innerHTML = ""; 
 
@@ -31,8 +33,16 @@ export async function router() {
             app.innerHTML = `<mfe-checkout></mfe-checkout>`;
         }
         else if (path.startsWith("/pedidos")) {
-            await import(`${environment.URL_Employees}/employees.js`);
-            app.innerHTML = `<mfe-employees></mfe-employees>`;
+            if(typeAccount==="CLIENT"){
+                await import(`${environment.URL_Order}/orderClient.js`);
+                app.innerHTML = `<mfe-order-client></mfe-order-client>`;
+                console.log("cliente")
+            }else{
+                console.log("admin")
+                await import(`${environment.URL_Employees}/employees.js`);
+                app.innerHTML = `<mfe-employees></mfe-employees>`;
+            }
+           
         }
 
         else {
