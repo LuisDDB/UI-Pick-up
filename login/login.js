@@ -35,7 +35,7 @@ class Login extends HTMLElement {
 
 
         //Manejo del login
-        const formLogin = document.getElementById("loginForm");
+        const formLogin = this.querySelector("#loginForm");
         formLogin.addEventListener("submit", async e => {
             e.preventDefault();
             const email = formLogin["email"].value;

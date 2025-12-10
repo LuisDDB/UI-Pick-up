@@ -104,14 +104,12 @@ class Header extends HTMLElement {
 
     }
     
-    updateAuthState(btnLogin, btnRegister) {
+updateAuthState(btnLogin, btnRegister) {
+        // Obtenemos el usuario (será null si no hay sesión)
         const user = JSON.parse(localStorage.getItem("user"));
-        console.log("header " + user);
-
 
         if (!btnLogin || !btnRegister) return;
-
-        if (user.id) {
+        if (user && user.id) {
             btnLogin.style.display = "none";
             btnRegister.style.display = "none";
         } else {

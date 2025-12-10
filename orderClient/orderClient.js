@@ -45,12 +45,14 @@ class OrderClient extends HTMLElement {
 
     async fetchOrdersData() {
         const idClient = JSON.parse(localStorage.getItem("user")).id;
+        console.log("token: ",this.token);
         try {
+
             const response = await fetch(`${environment.URL_API}/order/client/${idClient}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bear ${this.token}`
+                    "Authorization": `Bearer ${this.token}`
                 }
             });
             const raw = await response.json();

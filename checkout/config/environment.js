@@ -5,9 +5,6 @@ export const environment = {
     URL_Home: "http://192.168.100.14:4003",
     URL_Store: "http://192.168.100.14:4004",
     URL_Product: "http://192.168.100.14:4005",
-    URL_Checkout: "http://192.168.100.14:4007"
-
-
-
+    URL_Checkout: "http://192.168.100.14:4007",
     
 }

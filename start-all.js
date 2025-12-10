@@ -2,7 +2,7 @@ import { exec } from "child_process";
 
 function run(name, path, port) {
     console.log(`Iniciando ${name}...`);
-    exec(`cd ${path} && npx serve -p ${port} --cors`, { shell: true });
+    exec(`cd ${path} && npx serve -s -p ${port} --cors`, { shell: true });
     console.log(`http://192.168.100.14:${port}`)
 }
 
@@ -16,11 +16,3 @@ run("ProductDetail MFE", "product-detail", 4006);
 run("checkout MFE", "checkout", 4007);
 run("employes MFE", "employees", 4008);
 run("Order MFE", "orderClient", 4009);
-
-
-
-
-
-
-
-
