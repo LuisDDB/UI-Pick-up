@@ -2,8 +2,8 @@ import { exec } from "child_process";
 
 function run(name, path, port) {
     console.log(`Iniciando ${name}...`);
-    exec(`cd ${path} && npx serve -p ${port} --cors`, { shell: true });
-    console.log(`http://192.168.100.14:${port}`)
+    exec(`cd ${path} && npx live-server --port=${port} --host=192.168.0.8 --cors --no-browser`, { shell: true });
+    console.log(`http://192.168.0.8:${port}`)
 }
 
 run("index", "index", 4000);

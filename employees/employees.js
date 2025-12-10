@@ -1,4 +1,3 @@
-// FILE: employees/employees.js
 import { environment } from "./config/environment.js";
 
 /**
@@ -35,7 +34,7 @@ class EmployeeDashboard extends HTMLElement {
             </aside>
 
             <main class="main-content" id="content-area">
-                <div style="padding:2rem; text-align:center;"><h3>⌛ Cargando sistema...</h3></div>
+                <div style="padding:2rem; text-align:center;"><h3> Cargando sistema...</h3></div>
             </main>
         </div>
         `;
@@ -55,8 +54,6 @@ class EmployeeDashboard extends HTMLElement {
                 }
             );
             const rawData = await response.json();
-            
-            // Guardamos los datos normalizados
             this.orders = rawData.map(o => ({
                 id: o.order_id,
                 status: o.state,
@@ -72,10 +69,10 @@ class EmployeeDashboard extends HTMLElement {
         }
     }
 
-    // --- 1. VISTA: PEDIDOS ACTIVOS ---
+    //active orders view
     async loadOrders() {
         const content = this.querySelector("#content-area");
-        content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3>⌛ Cargando pedidos...</h3></div>`;
+        content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3> Cargando pedidos...</h3></div>`;
         
         const success = await this.fetchOrdersData();
         if (!success) {
@@ -89,36 +86,30 @@ class EmployeeDashboard extends HTMLElement {
         );
 
         if (activeOrders.length === 0) {
-            content.innerHTML = `<div style="padding:2rem; text-align:center;"><h2>✅ Todo al día</h2><p>No hay pedidos pendientes por surtir.</p></div>`;
+            content.innerHTML = `<div style="padding:2rem; text-align:center;"><h2> Todo al día</h2><p>No hay pedidos pendientes por surtir.</p></div>`;
             return;
         }
 
         this.renderGrid(activeOrders, content, false);
     }
 
-    // --- 2. VISTA: HISTORIAL (NUEVA) ---
+    // history view
     async loadHistory() {
         const content = this.querySelector("#content-area");
-        content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3>⌛ Cargando historial...</h3></div>`;
-
-        // Refrescamos datos por si hubo cambios recientes
+        content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3> Cargando historial...</h3></div>`;
         await this.fetchOrdersData();
-
-        // Filtramos solo los TERMINADOS (Recogido, Cancelado)
         const historyOrders = this.orders.filter(o => 
             ['Recogido', 'Cancelado', 'Entregado'].includes(o.status)
         );
 
         if (historyOrders.length === 0) {
-            content.innerHTML = `<div style="padding:2rem; text-align:center;"><h2>📜 Historial vacío</h2><p>Aún no se han completado entregas.</p></div>`;
+            content.innerHTML = `<div style="padding:2rem; text-align:center;"><h2> Historial vacío</h2><p>Aún no se han completado entregas.</p></div>`;
             return;
         }
-
-        // Usamos la misma función de renderizado pero con modo "historial"
         this.renderGrid(historyOrders, content, true);
     }
 
-    // Función reutilizable para pintar las tarjetas
+    // order grid renderer
     renderGrid(list, container, isHistory) {
         container.innerHTML = `
             <h2>${isHistory ? 'Historial de Entregas' : 'Pedidos en Curso'} (${list.length})</h2>
@@ -129,9 +120,8 @@ class EmployeeDashboard extends HTMLElement {
                     let btnHtml = '';
 
                     if (order.status === 'Listo para Recoger') statusClass = 'status-ready';
-                    if (order.status === 'Recogido') statusClass = 'status-ready'; // Usamos verde para finalizados también
+                    if (order.status === 'Recogido') statusClass = 'status-ready';
                     
-                    // Botones: Solo mostramos acciones si NO es historial
                     if (!isHistory) {
                         let nextStatus = '';
                         let btnText = '';
@@ -147,7 +137,6 @@ class EmployeeDashboard extends HTMLElement {
                         }
                         btnHtml = `<button class="${btnClass}" onclick="this.getRootNode().host.updateStatus(${order.id}, '${nextStatus}')">${btnText}</button>`;
                     } else {
-                        // En historial solo mostramos fecha o un texto estático
                         btnHtml = `<span style="color:#64748b; font-size:0.8rem;">Finalizado</span>`;
                     }
 
@@ -170,7 +159,7 @@ class EmployeeDashboard extends HTMLElement {
             </div>`;
     }
 
-    // --- ACTUALIZAR ESTADO ---
+    // state update
     async updateStatus(orderId, newStatus) {
         if (!confirm(`¿Cambiar estado a "${newStatus}"?`)) return;
         try {
@@ -179,11 +168,11 @@ class EmployeeDashboard extends HTMLElement {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
-            if (res.ok) this.loadOrders(); // Recargar vista activa
+            if (res.ok) this.loadOrders();
         } catch (err) { alert("Error de conexión"); }
     }
 
-    // --- 3. VISTA: CHAT ---
+    // chat view
     async loadChatLayout() {
         const content = this.querySelector("#content-area");
         content.innerHTML = `
@@ -199,7 +188,6 @@ class EmployeeDashboard extends HTMLElement {
 
     renderChatList() {
         const list = this.querySelector("#chat-list-container");
-        // Mostramos todos los pedidos en el chat para poder consultar dudas de cualquiera
         list.innerHTML = this.orders.map(o => `
             <div class="chat-item" id="chat-item-${o.id}">
                 <strong>Pedido #${o.id}</strong><br><small>${o.store}</small>
@@ -254,8 +242,6 @@ class EmployeeDashboard extends HTMLElement {
         d.textContent = text;
         this.querySelector("#chat-feed").appendChild(d);
     }
-
-    // --- NAVEGACIÓN ---
     bindEvents() {
         const btnOrders = this.querySelector("#btn-orders");
         const btnChat = this.querySelector("#btn-chat");
@@ -268,8 +254,6 @@ class EmployeeDashboard extends HTMLElement {
 
         btnOrders.addEventListener("click", () => { this.loadOrders(); setActive(btnOrders); });
         btnChat.addEventListener("click", () => { this.loadChatLayout(); setActive(btnChat); });
-        
-        // ✅ AHORA SÍ ESTÁ CONECTADO
         btnHistory.addEventListener("click", () => { 
             this.loadHistory(); 
             setActive(btnHistory); 
