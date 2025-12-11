@@ -35,6 +35,12 @@ export async function router() {
             app.innerHTML = `<mfe-employees></mfe-employees>`;
         }
 
+        // --- Admin route added ---
+        else if (path.startsWith("/admin")) {
+            await import(`${environment.URL_Admin}/admin.js`);
+            app.innerHTML = `<mfe-admin></mfe-admin>`;
+        }
+
         else {
             app.innerHTML = `<h1>No se encontró la pagina </h1>
                 <h2>Error 404</h2>`;
@@ -45,7 +51,6 @@ export async function router() {
         app.innerHTML = `<h2>Error al cargar el módulo</h2>`;
     }
 }
-
 
 window.addEventListener("click", (e) => {
     const link = e.target.closest("[data-route]");
