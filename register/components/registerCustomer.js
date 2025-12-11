@@ -85,15 +85,15 @@ class RegisterCustomer extends HTMLElement {
                 const formData = {
                     name: formRegister["name"].value,
                     phone: formRegister["phone"].value,
-                    address: formRegister["address"].value, // Nuevo campo
+                    address: formRegister["address"].value,
                     email: formRegister["email"].value,
                     password: formRegister["password"].value
                 };
 
-                console.log("Enviando datos:", formData); // Para depurar en consola
+                console.log("Enviando datos:", formData);
 
                 try {
-                    const res = await fetch(`${environment.URL_API}/register`, {
+                    const res = await fetch(`${environment.URL_API}`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(formData)
@@ -102,7 +102,6 @@ class RegisterCustomer extends HTMLElement {
                     const data = await res.json();
                     
                     if (!res.ok) {
-                        // Muestra el error que devuelve el backend
                         alert(data.message || data.error || "Error al registrar usuario");
                         return;
                     }

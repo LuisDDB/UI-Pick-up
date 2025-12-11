@@ -57,11 +57,13 @@ class Login extends HTMLElement {
                     return;
                 }
 
-                localStorage.setItem("user", JSON.stringify({
-                    "id":data.client.id,
-                    "name": data.client.name,
-                    "token": data.client.token
-                }))
+            localStorage.setItem("user", JSON.stringify({
+                id: data.client.id,
+                name: data.client.name,
+                email: data.client.email,
+                token: data.client.token
+            }));
+
 
                 window.dispatchEvent(new CustomEvent("logged-in",{
                     detail: {user: data}
