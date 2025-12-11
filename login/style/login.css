@@ -160,7 +160,7 @@ mfe-login {
     transition: var(--transition);
 }
 
-.btn-close:hover{
+.btn-close:hover {
     background-color: var(--danger);
     transform: translateY(-1px);
     box-shadow: var(--shadow-sm);
@@ -183,6 +183,23 @@ mfe-login {
 
 .btn-enlace span:hover {
     text-decoration: underline;
+}
+
+.error-message {
+    color: var(--danger);
+    text-align: center;
+    margin-top: 10px;
+    visibility: hidden;
+    height: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease, height 0s 0.3s;
+}
+
+.error-message.show {
+    visibility: visible;
+    height: auto;
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 @media (max-width: 480px) {

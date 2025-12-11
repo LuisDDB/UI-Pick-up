@@ -14,6 +14,11 @@ export async function router() {
 
     try {
         if (path === "/" || path.startsWith("/home")) {
+            if (typeAccount === "ADMIN" || typeAccount === "EMPLOYEE") {
+                history.pushState({}, "", `/store/${account.store_id}`);
+                router();
+                return;
+            }
             await import(`${environment.URL_Home}/home.js`);
             app.innerHTML = `<mfe-home></mfe-home>`;
             return;
@@ -53,7 +58,7 @@ export async function router() {
 
             else if (typeAccount === "NOTLOG") {
                 history.pushState({}, "", "/");
-                
+
                 await import(`${environment.URL_Home}/home.js`);
                 app.innerHTML = `<mfe-home></mfe-home>`;
 
@@ -62,7 +67,7 @@ export async function router() {
 
                 window.addEventListener("logged-in", () => {
                     history.pushState({}, "", "/pedidos");
-                    router() 
+                    router()
                 });
 
                 return;

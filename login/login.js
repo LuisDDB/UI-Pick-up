@@ -8,6 +8,7 @@ class Login extends HTMLElement {
             `
         <style>
             @import url(${environment.URL_Login}/style/login.css);
+           
         </style>
         <div id="modal" class="modal">
             <form id="loginForm" class="form-login">
@@ -20,6 +21,8 @@ class Login extends HTMLElement {
                 <input class="input" name="email" type="email" placeholder="ejemplo@gmail.com" required />
                 <label class="label" for="password">Ingrese su contraseña</label>
                 <input class="input"name="password" type="password" placeholder="contraseña" required /> 
+                
+                <div id="errorMessage" class="error-message"></div>
 
                 <button class="btn" type="submit">Login</button>
 
@@ -32,51 +35,93 @@ class Login extends HTMLElement {
         `;
 
         const componentInstance = this;
-
-
-        //Manejo del login
         const formLogin = this.querySelector("#loginForm");
+        const errorMessageDiv = this.querySelector("#errorMessage");
+
+        function displayError(message) {
+            if (message) {
+                errorMessageDiv.textContent = message;
+                errorMessageDiv.classList.add('show');
+            } else {
+                errorMessageDiv.textContent = '';
+                errorMessageDiv.classList.remove('show');
+            }
+        }
+        
+        function handleLoginSuccess(data, role) {
+            const userData = data[role];
+            
+            localStorage.setItem("user", JSON.stringify({
+                "id": userData.id,
+                "name": userData.name,
+                "type": userData.type,
+                "token": userData.token,
+                "store_id": userData.idStore
+
+            }));
+
+            window.dispatchEvent(new CustomEvent("logged-in", {
+                detail: { user: data }
+            }));
+
+            closeModal();
+        }
+
         formLogin.addEventListener("submit", async e => {
             e.preventDefault();
+            displayError(null);
+            
             const email = formLogin["email"].value;
             const password = formLogin["password"].value;
+            const body = JSON.stringify({ email, password });
+            const headers = { "Content-Type": "application/json" };
+            
+            let loggedIn = false;
 
             try {
-                const res = await fetch(`${environment.URL_API}/login`, {
+                const resClient = await fetch(`${environment.URL_API}/login`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
+                    headers: headers,
+                    body: body
                 });
 
-                const data = await res.json();
+                if (resClient.ok) {
+                    const data = await resClient.json();
+                    console.log(data);
 
-                console.log(data);
+                    handleLoginSuccess(data, "client");
+                    loggedIn = true;
+                } 
 
-                if (!res.ok) {
-                    alert(data.error || "Credenciales incorrectas");
-                    return;
-                }
-
-                localStorage.setItem("user", JSON.stringify({
-                    "id":data.client.id,
-                    "name": data.client.name,
-                    "type": data.client.type,
-                    "token": data.client.token
-                }))
-
-                window.dispatchEvent(new CustomEvent("logged-in",{
-                    detail: {user: data}
-                }));
-
-
-                closeModal();
             } catch (error) {
                 console.error(error);
-                alert("Error al conectar con el servidor");
             }
-        })
 
-        //Cerrar el modal
+            if (!loggedIn) {
+                try {
+                    const resAdmin = await fetch(`${environment.URL_API}/login/admin`, {
+                        method: "POST",
+                        headers: headers,
+                        body: body
+                    });
+
+                    if (resAdmin.ok) {
+                        const data = await resAdmin.json();
+                        console.log(data);
+                        handleLoginSuccess(data, "admin"); 
+                        loggedIn = true;
+                    } 
+
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            if (!loggedIn) {
+                displayError("Email o contraseña incorrectos.");
+            }
+        });
+
         const modal = this.querySelector("#modal");
         const btnClose = this.querySelector(".close-btn");
         btnClose.addEventListener("click" ,() =>{
@@ -88,7 +133,6 @@ class Login extends HTMLElement {
             }
         });
         
-        //Mandar al registro
         const btnToRegister = this.querySelector("#toRegister");
         btnToRegister.addEventListener("click",openRegisterLogin);
         function openRegisterLogin(){
@@ -99,19 +143,10 @@ class Login extends HTMLElement {
             closeModal();
         }
 
-        /**
-         * Elimina el elemento modal
-         */
         function closeModal() {
             componentInstance.remove()
         }
-
-        
-
-
-
-
     }
 }
 
-customElements.define('mfe-login', Login)
+customElements.define('mfe-login', Login);

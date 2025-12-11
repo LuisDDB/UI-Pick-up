@@ -16,8 +16,8 @@ class RegisterAdmin extends HTMLElement {
                     <button type="button" class="close-btn">X</button>
                 </div>
 
-                <label class="label" for="name">Nombre completo</label>
-                <input class="input" name="name" type="text" placeholder="Luis Domínguez" required />
+                <label class="label" for="adminName">Nombre completo</label>
+                <input class="input" name="adminName" type="text" placeholder="Luis Domínguez" required />
             
                 <label class="label" for="email">Correo del administrador</label>
                 <input class="input" name="email" type="email" placeholder="ejemplo@gmail.com" required />
@@ -27,14 +27,14 @@ class RegisterAdmin extends HTMLElement {
 
                 <h3 style="margin-top: 15px;">Información de la tienda</h3>
 
-                <label class="label" for="name">Nombre de la tienda</label>
-                <input class="input" name="name" type="text" placeholder="Nombre de la tienda" required />
+                <label class="label" for="storeName">Nombre de la tienda</label>
+                <input class="input" name="storeName" type="text" placeholder="Nombre de la tienda" required />
 
                 <label class="label" for="address">Dirección</label>
                 <input class="input" name="address" type="text" placeholder="Dirección completa" required />
 
                 <label class="label" for="phone">Teléfono</label>
-                <input class="input" name="phone" type="text" placeholder="Ej: 555-123-4567" required />
+                <input class="input" name="phone" type="tel" placeholder="Ej: 555-123-4567" required />
 
                 <label class="label" for="schedule">Horario</label>
                 <input class="input" name="schedule" type="text" placeholder="Ej: L–V 9:00–18:00" required />
@@ -55,86 +55,121 @@ class RegisterAdmin extends HTMLElement {
 
         const componentInstance = this;
 
-            const modal = this.querySelector(".modal");
-            const formRegister = this.querySelector("#form-register");
-            const btnToLogin = this.querySelector("#toLogin");
-            const btnCloseModal = this.querySelector(".close-btn");
+        // Se usa "#registerAdminForm" que es el ID del formulario en el HTML.
+        const formRegister = this.querySelector("#registerAdminForm"); 
+        const modal = this.querySelector(".modal");
+        const btnToLogin = this.querySelector("#toLogin");
+        const btnCloseModal = this.querySelector(".close-btn");
 
-            const btnToRegisterAdmin = componentInstance.querySelector("#toRegisterAdmin");
+        const btnToRegisterAdmin = componentInstance.querySelector("#toRegisterAdmin");
 
-            if (btnToRegisterAdmin) {
-                btnToRegisterAdmin.addEventListener("click", () => {
-                    componentInstance.dispatchEvent(
-                        new CustomEvent("change-modal", {
-                            bubbles: true,
-                            composed: true,
-                        })
-                    );
-
-                });
-            }
-
-
-
-            if (modal) {
-                modal.addEventListener("click", (e) => {
-                    if (e.target === modal) closeModal();
-                });
-            }
-
-            if (btnCloseModal) {
-                btnCloseModal.addEventListener("click", closeModal);
-            }
-
-            if (btnToLogin) {
-                btnToLogin.addEventListener("click", openLoginModal);
-            }
-            if (formRegister) {
-                formRegister.addEventListener("submit", async (e) => {
-                    e.preventDefault();
-                    const name = formRegister["name"].value;
-                    const email = formRegister["email"].value;
-                    const password = formRegister["password"].value;
-
-                    try {
-                        const res = await fetch(`${environment.URL_API}/register`, {
-                            method: "POST",
-                            credentials: "include",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ name, email, password })
-                        });
-
-                        const data = await res.json();
-                        if (!res.ok) {
-                            alert(data.error || "Error en el registro");
-                            return;
-                        }
-                        console.log("Registro OK:", data);
-                        openLoginModal();
-                    } catch (err) {
-                        console.error("Fetch error:", err);
-                        alert("Error al conectar el servidor");
-                    }
-                });
-            }
-
-            function openLoginModal() {
-                componentInstance.dispatchEvent(new CustomEvent("open-login", {
-                    bubbles: true,
-                    composed: true
-                }));
-                closeModal();
-            }
-
-            function closeModal() {
+        if (btnToRegisterAdmin) {
+            btnToRegisterAdmin.addEventListener("click", () => {
                 componentInstance.dispatchEvent(
-                    new CustomEvent("close-model", {
+                    new CustomEvent("change-modal", {
                         bubbles: true,
-                        composed: true
+                        composed: true,
                     })
                 );
+            });
+        }
 
-            }
+
+        if (modal) {
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) closeModal();
+            });
+        }
+
+        if (btnCloseModal) {
+            btnCloseModal.addEventListener("click", closeModal);
+        }
+
+        if (btnToLogin) {
+            btnToLogin.addEventListener("click", openLoginModal);
+        }
+        
+        // Se adjunta el listener al formulario con ID "registerAdminForm"
+        if (formRegister) {
+            formRegister.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                
+                const adminName = formRegister["adminName"].value;
+                const email = formRegister["email"].value;
+                const password = formRegister["password"].value;
+                
+                const storeName = formRegister["storeName"].value; 
+                const address = formRegister["address"].value;
+                const phone = formRegister["phone"].value;
+                const schedule = formRegister["schedule"].value;
+
+                try {
+                    const storeRes = await fetch(`${environment.URL_API}/store/`, { 
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ 
+                            name: storeName, 
+                            address, 
+                            phone, 
+                            schedule 
+                        })
+                    });
+
+                    const storeData = await storeRes.json();
+                    if (!storeRes.ok) {
+                        alert(storeData.error || "Error al registrar la tienda");
+                        return;
+                    }
+                    console.log("Tienda registrada OK:", storeData);
+                    
+                    const storeID = storeData.id; 
+                    console.log(storeID);
+                    
+                    const adminRes = await fetch(`${environment.URL_API}/register/admin`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ 
+                            name: adminName, 
+                            email, 
+                            password,
+                            storeID
+                        })
+                    });
+
+                    const adminData = await adminRes.json();
+                    if (!adminRes.ok) {
+                        alert(adminData.error || "Error al registrar el administrador");
+                        return;
+                    }
+
+                    
+                    console.log("Administrador registrado OK:", adminData);
+                    alert("¡Cuenta y tienda creadas exitosamente!");
+                    openLoginModal(); 
+                } catch (err) {
+                    console.error("Fetch error:", err);
+                    alert("Error al conectar con el servidor.");
+                }
+            });
+        }
+
+        function openLoginModal() {
+            componentInstance.dispatchEvent(new CustomEvent("open-login", {
+                bubbles: true,
+                composed: true
+            }));
+            closeModal();
+        }
+
+        function closeModal() {
+            componentInstance.dispatchEvent(
+                new CustomEvent("close-model", {
+                    bubbles: true,
+                    composed: true
+                })
+            );
+
+        }
     }
 }
 

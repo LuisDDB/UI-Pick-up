@@ -1,6 +1,5 @@
 import { environment } from "./config/environment.js";
 
-// Employee Dashboard: Orders, Chat, History
 class EmployeeDashboard extends HTMLElement {
 
     constructor() {
@@ -40,7 +39,6 @@ class EmployeeDashboard extends HTMLElement {
     }
 
     async fetchOrdersData() {
-        // Validation: User must have a store_id
         if (!this.user || !this.user.store_id) {
             console.error("User has no store_id assigned");
             alert("Error: No store assigned to this user.");
@@ -48,27 +46,30 @@ class EmployeeDashboard extends HTMLElement {
         }
 
         try {
-            // UPDATED: Fetch only orders for this store
-            const url = `${environment.URL_API}/api/v1/orders/store/${this.user.store_id}`;
+            const url = `${environment.URL_API}/order/store/${this.user.store_id}`;
             
             const response = await fetch(url, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    // "Authorization": `Bearer ${this.token}` // Uncomment if Auth is enabled
+                    "Authorization": `Bearer ${this.token}`
                 }
             });
 
             const rawData = await response.json();
             
-            // Normalize data
+            if (response.status !== 200) {
+                console.error("API Error:", rawData);
+                return false;
+            }
+
             this.orders = rawData.map(o => ({
-                id: o.id, // Ensure this matches backend alias
-                status: o.status,
-                store: o.store,
-                date: o.date,
+                id: o.order_id, 
+                status: o.state,
+                store: o.store_id, 
+                date: o.order_date,
                 total: o.total,
-                pickupCode: o.pickup_code
+                pickupCode: o.pickup_code 
             }));
             return true;
 
@@ -78,18 +79,16 @@ class EmployeeDashboard extends HTMLElement {
         }
     }
 
-    // --- VIEW: ACTIVE ORDERS ---
     async loadOrders() {
         const content = this.querySelector("#content-area");
         content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3>⌛ Loading orders...</h3></div>`;
         
         const success = await this.fetchOrdersData();
         if (!success) {
-            content.innerHTML = `<div style="color:red; padding:2rem;">API Connection Error</div>`;
+            content.innerHTML = `<div style="color:red; padding:2rem;">API Connection Error or Data Fetch Failed</div>`;
             return;
         }
 
-        // Filter: Pending, Preparing, Ready
         const activeOrders = this.orders.filter(o => 
             ['Pendiente', 'Preparando', 'Listo para Recoger'].includes(o.status)
         );
@@ -100,16 +99,15 @@ class EmployeeDashboard extends HTMLElement {
         }
 
         this.renderGrid(activeOrders, content, false);
+        this.setupUpdateStatusListeners(); 
     }
 
-    // --- VIEW: HISTORY ---
     async loadHistory() {
         const content = this.querySelector("#content-area");
         content.innerHTML = `<div style="padding:2rem; text-align:center;"><h3>⌛ Loading history...</h3></div>`;
 
         await this.fetchOrdersData();
 
-        // Filter: Picked up, Cancelled, Delivered
         const historyOrders = this.orders.filter(o => 
             ['Recogido', 'Cancelado', 'Entregado'].includes(o.status)
         );
@@ -120,9 +118,9 @@ class EmployeeDashboard extends HTMLElement {
         }
 
         this.renderGrid(historyOrders, content, true);
+        this.setupUpdateStatusListeners();
     }
 
-    // Render Grid Cards
     renderGrid(list, container, isHistory) {
         container.innerHTML = `
             <h2>${isHistory ? 'Delivery History' : 'Active Orders'} (${list.length})</h2>
@@ -147,7 +145,13 @@ class EmployeeDashboard extends HTMLElement {
                             btnText = '📦 Deliver';
                             btnClass = 'btn status-ready';
                         }
-                        btnHtml = `<button class="${btnClass}" onclick="this.getRootNode().host.updateStatus(${order.id}, '${nextStatus}')">${btnText}</button>`;
+                        
+                        btnHtml = `<button 
+                            class="${btnClass} update-status-btn" 
+                            data-order-id="${order.id}" 
+                            data-next-status="${nextStatus}">
+                            ${btnText}
+                        </button>`;
                     } else {
                         btnHtml = `<span style="color:#64748b; font-size:0.8rem;">Finished</span>`;
                     }
@@ -158,7 +162,7 @@ class EmployeeDashboard extends HTMLElement {
                             <span class="order-id">#${order.id}</span>
                             <span class="status-badge ${statusClass}">${order.status}</span>
                         </div>
-                        <div class="client-info"><h3>${order.store}</h3><small>${order.date}</small></div>
+                        <div class="client-info"><h3>Store #${order.store}</h3><small>${order.date}</small></div>
                         <div class="grocery-list">
                             ${order.pickupCode ? `<strong>Code: ${order.pickupCode}</strong>` : ''}
                         </div>
@@ -167,24 +171,40 @@ class EmployeeDashboard extends HTMLElement {
                             ${btnHtml}
                         </div>
                     </div>
-                `}).join('')}
+                    `;
+                }).join('')}
             </div>`;
     }
 
-    // --- ACTION: UPDATE STATUS ---
+    setupUpdateStatusListeners() {
+        const grid = this.querySelector(".orders-grid");
+        if (!grid) return;
+
+        grid.addEventListener('click', (e) => {
+            const button = e.target.closest('.update-status-btn');
+            if (button) {
+                const orderId = button.dataset.orderId;
+                const nextStatus = button.dataset.nextStatus;
+                this.updateStatus(orderId, nextStatus);
+            }
+        });
+    }
+
     async updateStatus(orderId, newStatus) {
         if (!confirm(`Update status to "${newStatus}"?`)) return;
         try {
-            const res = await fetch(`${environment.URL_API}/api/v1/orders/${orderId}/status`, {
+            const res = await fetch(`${environment.URL_API}/order/${orderId}/status`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
+                headers: { 
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${this.token}`
+                },
+                body: JSON.stringify({ "newState": newStatus })
             });
             if (res.ok) this.loadOrders(); 
         } catch (err) { alert("Connection Error"); }
     }
 
-    // --- VIEW: CHAT ---
     async loadChatLayout() {
         const content = this.querySelector("#content-area");
         content.innerHTML = `
@@ -202,7 +222,7 @@ class EmployeeDashboard extends HTMLElement {
         const list = this.querySelector("#chat-list-container");
         list.innerHTML = this.orders.map(o => `
             <div class="chat-item" id="chat-item-${o.id}">
-                <strong>Order #${o.id}</strong><br><small>${o.store}</small>
+                <strong>Order #${o.id}</strong><br><small>Store #${o.store}</small>
             </div>`).join('');
         
         this.orders.forEach(o => {
@@ -242,7 +262,11 @@ class EmployeeDashboard extends HTMLElement {
             this.appendMsg(text, 'me');
             input.value = "";
             await fetch(`${environment.URL_API}/api/v1/messages`, {
-                method: 'POST', headers: {'Content-Type':'application/json'},
+                method: 'POST', 
+                headers: {
+                    'Content-Type':'application/json',
+                    "Authorization": `Bearer ${this.token}`
+                },
                 body: JSON.stringify({ orderId: this.currentChatOrderId, senderRole: 'employee', content: text })
             });
         });
@@ -255,7 +279,6 @@ class EmployeeDashboard extends HTMLElement {
         this.querySelector("#chat-feed").appendChild(d);
     }
 
-    // --- NAVIGATION ---
     bindEvents() {
         const btnOrders = this.querySelector("#btn-orders");
         const btnChat = this.querySelector("#btn-chat");
