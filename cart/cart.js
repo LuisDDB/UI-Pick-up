@@ -48,6 +48,8 @@ class CartComponent extends HTMLElement {
                 window.dispatchEvent(
                     new CustomEvent('navigate', { detail: { url: '/checkout' } })
                 );
+                this.close();
+
             });
         }
     }

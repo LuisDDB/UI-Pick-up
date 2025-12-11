@@ -9,11 +9,11 @@ class RegisterAdmin extends HTMLElement {
         </style>
 
         <div id="modal" class="modal">
-            <form id="registerAdminForm" class="form-register">
+            <form id="registerAdminForm" class="form-admin form-register">
 
                 <div class="form-header">
                     <h2>Crear cuenta </h2>
-                    <button type="button" class="btn close-btn">X</button>
+                    <button type="button" class="close-btn">X</button>
                 </div>
 
                 <label class="label" for="name">Nombre completo</label>

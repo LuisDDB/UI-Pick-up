@@ -38,7 +38,7 @@ class Header extends HTMLElement {
                     <li>
                         <a href="/pedidos" data-route> Mis pedidos</a>
                     </li>
-                    <li>
+                    <li id="employee-info-link">
                         <a href="/empleados" data-route>Info Empleado</a>
                     </li>
                     <li>
@@ -64,8 +64,16 @@ class Header extends HTMLElement {
         const btnCart = this.querySelector("#cart-btn");
 
         btnCart.addEventListener("click", () => {
-            const cart = document.querySelector("#cartGlobal");
-            cart.open();
+            const account = JSON.parse(localStorage.getItem("user"));
+            let typeAccount = account ? account.type : "NOTLOG";
+            if (typeAccount === "NOTLOG") {
+                const modal = document.createElement("mfe-login");
+                document.body.appendChild(modal);
+            } else if (typeAccount === "CLIENT") {
+                const cart = document.querySelector("#cartGlobal");
+                cart.open();
+            }
+
         });
 
 
@@ -94,27 +102,39 @@ class Header extends HTMLElement {
         }
 
         window.addEventListener("logged-in", () => {
-            this.updateAuthState(btnLogin, btnRegister);
+            this.updateAuthState();
         });
 
-        this.updateAuthState(btnLogin, btnRegister);
+        this.updateAuthState();
 
 
 
 
     }
-    
-updateAuthState(btnLogin, btnRegister) {
-        // Obtenemos el usuario (será null si no hay sesión)
+
+    updateAuthState() {
         const user = JSON.parse(localStorage.getItem("user"));
 
-        if (!btnLogin || !btnRegister) return;
+        const btnLogin = this.querySelector("#login-btn");
+        const btnRegister = this.querySelector("#register-btn");
+        const employeeInfoLink = this.querySelector("#employee-info-link"); 
+
+        if (!btnLogin || !btnRegister || !employeeInfoLink) return;
+
         if (user && user.id) {
             btnLogin.style.display = "none";
             btnRegister.style.display = "none";
+            
+            if (user.type === "ADMIN") {
+                employeeInfoLink.style.display = "list-item";
+            } else {
+                employeeInfoLink.style.display = "none";
+            }
+
         } else {
             btnLogin.style.display = "block";
             btnRegister.style.display = "block";
+            employeeInfoLink.style.display = "none"; 
         }
     }
 

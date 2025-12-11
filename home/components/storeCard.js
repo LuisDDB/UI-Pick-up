@@ -14,9 +14,11 @@ class StoreCard extends HTMLElement {
       </style>
       <article class="store-card" role="button" tabindex="0" data-id="${id}">
         <h3>${escapeHtml(name)}</h3>
-        <p class="detail-item"><strong>Dirección:</strong> ${escapeHtml(address)}</p>
-        <p class="detail-item"><strong>Tel:</strong> ${escapeHtml(phone || '—')}</p>
-        <p class="detail-item"><strong>Horario:</strong> ${escapeHtml(schedule || '—')}</p>
+        <div class="store-info">
+          <p class="detail-item"><strong>Dirección:</strong> ${escapeHtml(address)}</p>
+          <p class="detail-item"><strong>Tel:</strong> ${escapeHtml(phone || '—')}</p>
+          <p class="detail-item"><strong>Horario:</strong> ${escapeHtml(schedule || '—')}</p>
+        </div>
         <div class="actions">
           <button class="open-store">Ver productos</button>
         </div>

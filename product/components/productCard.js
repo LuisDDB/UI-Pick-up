@@ -31,10 +31,18 @@ class ProductCard extends HTMLElement {
     });
 
     this.querySelector('.btn-add').addEventListener('click', () => {
-      addToCart(this._product, 1);
-      window.dispatchEvent(new Event('cart-updated'));
-      this.querySelector('.btn-add').textContent = 'Agregado ✓';
-      setTimeout(() => this.querySelector('.btn-add').textContent = 'Agregar', 900);
+      const account = JSON.parse(localStorage.getItem("user"));
+      let typeAccount = account ? account.type : "NOTLOG";
+      if (typeAccount === "NOTLOG") {
+        const modal = document.createElement("mfe-login");
+        document.body.appendChild(modal);
+      } else if (typeAccount === "CLIENT") {
+        addToCart(this._product, 1);
+        window.dispatchEvent(new Event('cart-updated'));
+        this.querySelector('.btn-add').textContent = 'Agregado ✓';
+        setTimeout(() => this.querySelector('.btn-add').textContent = 'Agregar', 900);
+      }
+
     });
   }
 }

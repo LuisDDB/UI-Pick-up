@@ -13,7 +13,7 @@ class Login extends HTMLElement {
             <form id="loginForm" class="form-login">
                 <div class="form-header">
                     <h2>Iniciar sesión</h2>
-                    <button type="button" class="btn close-btn">X</button>
+                    <button type="button-close" class="close-btn">X</button>
                 </div>
 
                 <label class="label" for="email">Ingrese su email</label>

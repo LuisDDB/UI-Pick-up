@@ -52,12 +52,14 @@ export async function router() {
             }
 
             else if (typeAccount === "NOTLOG") {
-                let login = false
                 history.pushState({}, "", "/");
+                
                 await import(`${environment.URL_Home}/home.js`);
                 app.innerHTML = `<mfe-home></mfe-home>`;
+
                 const modal = document.createElement("mfe-login");
                 document.body.appendChild(modal);
+
                 window.addEventListener("logged-in", () => {
                     history.pushState({}, "", "/pedidos");
                     router() 

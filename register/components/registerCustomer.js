@@ -8,10 +8,10 @@ class RegisterCustomer extends HTMLElement {
             @import url(${environment.URL_Register}/style/register.css);
         </style>
         <div class="modal">
-            <form id="form-register" class="form-register">
+            <form id="form-register" class="form-customer form-register">
             <div class="form-header">
                 <h2>Registrarse</h2>
-                <button type="button" class="btn close-btn">X</button>
+                <button type="button" class="close-btn">X</button>
             </div>
 
             <label class="label" for="name">Nombre completo</label>

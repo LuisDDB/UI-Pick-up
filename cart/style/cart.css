@@ -1,15 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap');
+
 :root {
-    --primary-color: #1E3A8A;
-    --btn-color: #3B82F6;
-    --btn-selected: #0946a8;
-    --white: #FFFFFF;
-    --black: #000000;
-    --gray: #F3F4F6;
-    --transition: 0.3s ease;
+    --primary-color: #2563eb; 
+    --primary-dark: #1e40af;
+    --secondary-color: #64748b; 
+    
+    --bg-main: #f8fafc; 
+    --bg-white: #ffffff;
+    
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
     --border-radius: 0.75rem;
+    --transition: all 0.2s ease;
+
+    --cart-transition: right 0.3s ease; 
 }
 
-/* --- Panel Principal del Carrito (Aside) --- */
+* {
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+}
+
 
 .cart-panel {
     position: fixed;
@@ -17,12 +33,11 @@
     right: -420px;
     width: 380px;
     max-width: 90%; 
-    height: 100vh; /* CRÍTICO: Usar 100vh (viewport height) para asegurar la altura total de la pantalla */
-    background: var(--white);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); 
-    transition: right var(--transition);
+    height: 100vh;
+    background: var(--bg-white);
+    box-shadow: var(--shadow-md); 
+    transition: var(--cart-transition);
     
-    /* El padding se gestiona internamente, pero se mantiene el Flexbox */
     padding: 0; 
     display: flex;
     flex-direction: column;
@@ -33,21 +48,20 @@
     right: 0; 
 }
 
-/* --- Encabezado del Carrito --- */
 
 .cart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 1.5rem 0.5rem 1.5rem; /* Padding superior e inferior fijo */
-    margin-bottom: 1.5rem;
-    border-bottom: 2px solid var(--gray); 
+    padding: 1.5rem 1.5rem 1rem 1.5rem; 
+    border-bottom: 1px solid #e2e8f0; 
     flex-shrink: 0; 
 }
 
 .cart-header h3 {
+    font-family: 'Poppins', sans-serif;
     font-size: 1.5rem;
-    color: var(--primary-color);
+    color: #1e293b; 
     margin: 0;
     font-weight: 700;
 }
@@ -55,35 +69,44 @@
 .close-cart {
     background: none;
     border: none;
-    color: var(--black);
+    color: var(--secondary-color);
     font-size: 1.6rem;
     cursor: pointer;
     padding: 0.2rem;
     line-height: 1;
-    transition: color var(--transition);
+    transition: var(--transition);
     flex-shrink: 0;
 }
 
 .close-cart:hover {
-    color: #DC2626; 
+    color: var(--danger); 
 }
-
-/* --- Lista de Artículos (Área Desplazable) --- */
 
 .cart-items {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 0 1.5rem; /* Padding lateral fijo */
-    margin-bottom: 0; /* CRÍTICO: Eliminar el margen inferior que empujaba el footer */
+    padding: 1.5rem 1.5rem 0 1.5rem; 
 }
+
+.cart-items::-webkit-scrollbar {
+    width: 8px;
+}
+.cart-items::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}
+.cart-items::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
 
 .cart-item {
     display: grid;
     grid-template-columns: 60px 1fr auto;
     gap: 1rem;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #E5E7EB; 
+    margin-bottom: 1.5rem; 
+    padding-bottom: 1.5rem; 
+    border-bottom: 1px solid #e2e8f0; 
     align-items: center;
 }
 
@@ -109,12 +132,13 @@
 .ci-meta .ci-name {
     font-size: 1rem;
     font-weight: 500;
+    color: #334155; 
     margin: 0 0 0.25rem 0;
 }
 
 .ci-meta .ci-price {
     font-size: 1.05rem;
-    color: var(--primary-color);
+    color: #1e293b; 
     font-weight: 700;
     margin: 0;
 }
@@ -130,7 +154,7 @@
 .qty-control {
     display: flex;
     align-items: center;
-    border: 1px solid #D1D5DB;
+    border: 1px solid #cbd5e1; 
     border-radius: 0.5rem;
 }
 
@@ -141,21 +165,22 @@
     font-size: 1.1rem;
     padding: 0.25rem 0.5rem;
     color: var(--primary-color);
-    transition: color var(--transition);
+    transition: var(--transition);
 }
 
 .qty-control span {
     padding: 0 0.5rem;
     font-weight: 600;
     font-size: 0.9rem;
+    color: #1e293b;
 }
 
 .qty-control button:hover {
-    color: var(--btn-selected);
+    color: var(--primary-dark); 
 }
 
 .remove-item {
-    color: #EF4444; 
+    color: var(--danger); 
     font-size: 0.875rem;
     font-weight: 500;
     text-decoration: underline;
@@ -163,24 +188,26 @@
     border: none;
     cursor: pointer;
     padding: 0; 
+    transition: var(--transition);
 }
 
 .remove-item:hover {
-    color: #B91C1C;
+    color: #b91c1c;
 }
 
-/* --- Pie de página (Área Fija) --- */
 
 .cart-footer {
     flex-shrink: 0; 
-    padding: 1rem 1.5rem 1.5rem 1.5rem; /* Padding para el total y el botón */
-    border-top: 1px solid #D1D5DB;
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    background-color: #f1f5f9;
 }
 
 .cart-summary {
-    margin-bottom: 0.75rem;
-    font-size: 1.15rem;
-    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -188,27 +215,26 @@
 
 #toCheckout {
     width: 100%;
-    padding: 0.9rem 1rem;
-    background: var(--btn-color);
-    color: var(--white);
+    padding: 0.8rem 1.2rem;
+    background: var(--primary-color);
+    color: var(--bg-white);
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
-    font-size: 1.15rem;
-    font-weight: 700;
-    transition: background-color var(--transition);
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: var(--transition);
 }
 
 #toCheckout:disabled {
-    background: #9CA3AF; 
+    background: #94a3b8;
     cursor: not-allowed;
 }
 
 #toCheckout:hover:not(:disabled) {
-    background: var(--btn-selected);
+    background: var(--primary-dark);
 }
 
-/* --- Responsive --- */
 
 @media (max-width: 480px) {
     .cart-panel {
@@ -220,22 +246,35 @@
         padding-left: 1rem;
         padding-right: 1rem;
     }
-
+    
     .cart-header {
         padding-top: 1rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .cart-items {
+        padding-top: 1rem;
+        padding-bottom: 0;
     }
 
     .cart-footer {
         padding-bottom: 1rem;
+        padding-top: 0.75rem;
     }
 
     .cart-header h3 {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
+    }
+
+    .close-cart {
+        font-size: 1.4rem;
     }
 
     .cart-item {
         grid-template-columns: 50px 1fr auto;
         gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
     }
 
     .cart-item img {
@@ -243,7 +282,39 @@
         height: 50px;
     }
 
+    .ci-meta .ci-name {
+        font-size: 0.95rem;
+    }
+    
+    .ci-meta .ci-price {
+        font-size: 1rem;
+    }
+
     .ci-actions {
-        min-width: 70px;
+        min-width: 60px;
+    }
+
+    .qty-control span {
+        padding: 0 0.3rem;
+        font-size: 0.85rem;
+    }
+
+    .qty-summary {
+        font-size: 1.1rem;
+    }
+
+    #toCheckout {
+        font-size: 1rem;
+        padding: 0.7rem 1rem;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .cart-panel {
+        width: 320px; 
+        max-width: 90%; 
+    }
+    .cart-header h3 {
+        font-size: 1.4rem;
     }
 }
