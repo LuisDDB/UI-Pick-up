@@ -63,7 +63,6 @@ class AdminDashboard extends HTMLElement {
         } catch(e){ content.innerHTML = "<p>Error loading products</p>"; }
     }
 
-    // ------------------- RENDER VIEWS -------------------
     renderEmployees() {
         const content = this.querySelector("#content-area");
         content.innerHTML = `
